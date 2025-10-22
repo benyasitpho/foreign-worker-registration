@@ -227,7 +227,7 @@ export default function DataList() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toast.info("ฟีเจอร์ดูรายละเอียดจะพร้อมใช้งานเร็วๆ นี้")}
+                              onClick={() => setLocation(`/worker/${worker.id}`)}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
