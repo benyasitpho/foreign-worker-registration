@@ -51,6 +51,7 @@ export const appRouter = router({
           numberOfEmployees: z.number().optional(),
           capitalAmount: z.number().optional(),
           notes: z.string().optional(),
+          documentsUrl: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {

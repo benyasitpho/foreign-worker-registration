@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { Upload, X } from "lucide-react";
 
 export default function EmployerForm() {
   const utils = trpc.useUtils();
@@ -19,6 +20,24 @@ export default function EmployerForm() {
       toast.error("เกิดข้อผิดพลาด: " + error.message);
     },
   });
+
+  const [documents, setDocuments] = useState<{[key: string]: File | null}>({
+    idCard: null,
+    houseRegistration: null,
+    leaseContract: null,
+    companyRegistration: null,
+    powerOfAttorney: null,
+    other: null,
+  });
+
+  const fileInputRefs = {
+    idCard: useRef<HTMLInputElement>(null),
+    houseRegistration: useRef<HTMLInputElement>(null),
+    leaseContract: useRef<HTMLInputElement>(null),
+    companyRegistration: useRef<HTMLInputElement>(null),
+    powerOfAttorney: useRef<HTMLInputElement>(null),
+    other: useRef<HTMLInputElement>(null),
+  };
 
   const [formData, setFormData] = useState({
     employerType: "",
@@ -66,9 +85,17 @@ export default function EmployerForm() {
       capitalAmount: "",
       notes: "",
     });
+    setDocuments({
+      idCard: null,
+      houseRegistration: null,
+      leaseContract: null,
+      companyRegistration: null,
+      powerOfAttorney: null,
+      other: null,
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.employerType || !formData.companyName || !formData.taxId) {
@@ -76,26 +103,51 @@ export default function EmployerForm() {
       return;
     }
 
-    createEmployer.mutate({
-      employerType: formData.employerType as "individual" | "company" | "partnership",
-      companyName: formData.companyName,
-      taxId: formData.taxId,
-      registrationNumber: formData.registrationNumber || undefined,
-      contactPerson: formData.contactPerson || undefined,
-      contactPosition: formData.contactPosition || undefined,
-      phone: formData.phone || undefined,
-      email: formData.email || undefined,
-      fax: formData.fax || undefined,
-      address: formData.address || undefined,
-      subdistrict: formData.subdistrict || undefined,
-      district: formData.district || undefined,
-      province: formData.province || undefined,
-      postalCode: formData.postalCode || undefined,
-      businessType: formData.businessType || undefined,
-      numberOfEmployees: formData.numberOfEmployees ? parseInt(formData.numberOfEmployees) : undefined,
-      capitalAmount: formData.capitalAmount ? parseInt(formData.capitalAmount) : undefined,
-      notes: formData.notes || undefined,
-    });
+    try {
+      // อัพโหลดเอกสารทั้งหมด
+      const uploadedDocs: Array<{type: string, url: string}> = [];
+      
+      for (const [key, file] of Object.entries(documents)) {
+        if (file) {
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            uploadedDocs.push({ type: key, url: data.url });
+          }
+        }
+      }
+
+      // สร้างข้อมูลนายจ้างพร้อม URL เอกสาร
+      createEmployer.mutate({
+        employerType: formData.employerType as "individual" | "company" | "partnership",
+        companyName: formData.companyName,
+        taxId: formData.taxId,
+        registrationNumber: formData.registrationNumber || undefined,
+        contactPerson: formData.contactPerson || undefined,
+        contactPosition: formData.contactPosition || undefined,
+        phone: formData.phone || undefined,
+        email: formData.email || undefined,
+        fax: formData.fax || undefined,
+        address: formData.address || undefined,
+        subdistrict: formData.subdistrict || undefined,
+        district: formData.district || undefined,
+        province: formData.province || undefined,
+        postalCode: formData.postalCode || undefined,
+        businessType: formData.businessType || undefined,
+        numberOfEmployees: formData.numberOfEmployees ? parseInt(formData.numberOfEmployees) : undefined,
+        capitalAmount: formData.capitalAmount ? parseInt(formData.capitalAmount) : undefined,
+        notes: formData.notes || undefined,
+        documentsUrl: uploadedDocs.length > 0 ? JSON.stringify(uploadedDocs) : undefined,
+      });
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาดในการอัพโหลดเอกสาร");
+    }
   };
 
   return (
@@ -315,6 +367,72 @@ export default function EmployerForm() {
             placeholder="ข้อมูลเพิ่มเติม (ถ้ามี)"
             rows={3}
           />
+        </div>
+      </div>
+
+      {/* เอกสารประกอบ */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold border-b pb-2">เอกสารประกอบ</h3>
+        <p className="text-sm text-muted-foreground">
+          อัพโหลดเอกสารที่จำเป็น (รองรับไฟล์ JPG, PNG, PDF ขนาดไม่เกิน 10MB)
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { key: 'idCard', label: 'บัตรประชาชน' },
+            { key: 'houseRegistration', label: 'ทะเบียนบ้าน' },
+            { key: 'leaseContract', label: 'สัญญาเช่า' },
+            { key: 'companyRegistration', label: 'เอกสารการจดทะเบียน' },
+            { key: 'powerOfAttorney', label: 'หนังสือมอบอำนาจ' },
+            { key: 'other', label: 'เอกสารอื่นๆ' },
+          ].map(({ key, label }) => (
+            <div key={key} className="space-y-2">
+              <Label>{label}</Label>
+              <div className="flex gap-2 items-center">
+                <input
+                  ref={fileInputRefs[key as keyof typeof fileInputRefs]}
+                  type="file"
+                  accept="image/jpeg,image/png,application/pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 10 * 1024 * 1024) {
+                        toast.error("ไฟล์มีขนาดใหญ่เกิน 10MB");
+                        return;
+                      }
+                      setDocuments(prev => ({ ...prev, [key]: file }));
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRefs[key as keyof typeof fileInputRefs].current?.click()}
+                  className="flex-1"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {documents[key] ? "เปลี่ยนไฟล์" : "อัพโหลด"}
+                </Button>
+                {documents[key] && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDocuments(prev => ({ ...prev, [key]: null }))}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              {documents[key] && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ {documents[key]!.name}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
