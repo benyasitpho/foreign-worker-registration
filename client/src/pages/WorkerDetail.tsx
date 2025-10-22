@@ -355,30 +355,34 @@ export default function WorkerDetail() {
           </CardHeader>
           <CardContent>
             {isEditing ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">คำนำหน้าชื่อ *</Label>
-                  <Select value={formData.title} onValueChange={(value) => setFormData({...formData, title: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="เลือกคำนำหน้า" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MR">MR</SelectItem>
-                      <SelectItem value="MRS">MRS</SelectItem>
-                      <SelectItem value="MISS">MISS</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">คำนำหน้าชื่อ *</Label>
+                    <Select value={formData.title} onValueChange={(value) => setFormData({...formData, title: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="เลือกคำนำหน้า" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="MR">MR</SelectItem>
+                        <SelectItem value="MRS">MRS</SelectItem>
+                        <SelectItem value="MISS">MISS</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="fullName">ชื่อ-นามสกุล (อังกฤษ) *</Label>
+                    <Input
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                      placeholder="ระบุชื่อ-นามสกุล"
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">ชื่อ-นามสกุล (อังกฤษ) *</Label>
-                  <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                    placeholder="ระบุชื่อ-นามสกุล"
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <div className="space-y-2">
                   <Label htmlFor="nationality">สัญชาติ *</Label>
@@ -509,15 +513,16 @@ export default function WorkerDetail() {
                   </div>
                 )}
 
-                <div className="col-span-full space-y-2">
-                  <Label htmlFor="notes">หมายเหตุ</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    placeholder="ข้อมูลเพิ่มเติม"
-                    rows={3}
-                  />
+                  <div className="col-span-full space-y-2">
+                    <Label htmlFor="notes">หมายเหตุ</Label>
+                    <Textarea
+                      id="notes"
+                      value={formData.notes}
+                      onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                      placeholder="ข้อมูลเพิ่มเติม"
+                      rows={3}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
