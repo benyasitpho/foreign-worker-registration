@@ -19,6 +19,44 @@ export const appRouter = router({
     }),
   }),
 
+  users: router({
+    // ดูรายการผู้ใช้ทั้งหมด (Admin เท่านั้น)
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== 'admin') {
+        throw new Error('Unauthorized: Admin only');
+      }
+      return await db.getAllUsers();
+    }),
+
+    // อนุมัติผู้ใช้
+    approve: protectedProcedure
+      .input(z.object({ userId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== 'admin') {
+          throw new Error('Unauthorized: Admin only');
+        }
+        return await db.approveUser(input.userId, ctx.user.id);
+      }),
+
+    // ปฏิเสธผู้ใช้
+    reject: protectedProcedure
+      .input(z.object({ userId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user?.role !== 'admin') {
+          throw new Error('Unauthorized: Admin only');
+        }
+        return await db.rejectUser(input.userId);
+      }),
+
+    // ดูรายการผู้ใช้ที่รออนุมัติ
+    pending: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user?.role !== 'admin') {
+        throw new Error('Unauthorized: Admin only');
+      }
+      return await db.getPendingUsers();
+    }),
+  }),
+
   employers: router({
     list: publicProcedure.query(async () => {
       return await db.getEmployers();

@@ -7,13 +7,79 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import EmployerDetail from "./pages/EmployerDetail";
 import WorkerDetail from "./pages/WorkerDetail";
+import AdminDashboard from "./pages/AdminDashboard";
+import PendingApproval from "./pages/PendingApproval";
+import { trpc } from "./lib/trpc";
+import { useEffect } from "react";
+import { useLocation } from "wouter";
+
+// Protected Route Component
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { data: user, isLoading } = trpc.auth.me.useQuery();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      // Redirect to OAuth login
+      window.location.href = "/api/auth/login";
+    } else if (!isLoading && user && user.approvalStatus !== "approved") {
+      // Redirect to pending approval page
+      setLocation("/pending");
+    }
+  }, [user, isLoading, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">กำลังตรวจสอบสิทธิ์...</p>
+      </div>
+    );
+  }
+
+  if (!user || user.approvalStatus !== "approved") {
+    return null;
+  }
+
+  return <Component />;
+}
+
+// Admin Route Component
+function AdminRoute({ component: Component }: { component: React.ComponentType }) {
+  const { data: user, isLoading } = trpc.auth.me.useQuery();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      window.location.href = "/api/auth/login";
+    } else if (!isLoading && user && user.role !== "admin") {
+      alert("คุณไม่มีสิทธิ์เข้าถึงหน้านี้");
+      setLocation("/");
+    }
+  }, [user, isLoading, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">กำลังตรวจสอบสิทธิ์...</p>
+      </div>
+    );
+  }
+
+  if (!user || user.role !== "admin") {
+    return null;
+  }
+
+  return <Component />;
+}
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/employer/:id"} component={EmployerDetail} />
-      <Route path={"/worker/:id"} component={WorkerDetail} />
+      <Route path={"/pending"} component={PendingApproval} />
+      <Route path={"/"} component={() => <ProtectedRoute component={Home} />} />
+      <Route path={"/employer/:id"} component={() => <ProtectedRoute component={EmployerDetail} />} />
+      <Route path={"/worker/:id"} component={() => <ProtectedRoute component={WorkerDetail} />} />
+      <Route path={"/admin"} component={() => <AdminRoute component={AdminDashboard} />} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

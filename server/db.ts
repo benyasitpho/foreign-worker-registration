@@ -205,3 +205,57 @@ export async function deleteWorker(id: number): Promise<void> {
 
   await db.delete(workers).where(eq(workers.id, id));
 }
+
+
+// ==================== User Management ====================
+
+export async function getAllUsers() {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return await db.select().from(users);
+}
+
+export async function getPendingUsers() {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return await db.select().from(users).where(eq(users.approvalStatus, "pending"));
+}
+
+export async function approveUser(userId: number, approvedBy: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(users)
+    .set({
+      approvalStatus: "approved",
+      approvedBy: approvedBy,
+      approvedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+
+  return { success: true };
+}
+
+export async function rejectUser(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  await db.update(users)
+    .set({
+      approvalStatus: "rejected",
+    })
+    .where(eq(users.id, userId));
+
+  return { success: true };
+}
+
