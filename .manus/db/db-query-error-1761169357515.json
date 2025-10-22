@@ -1,0 +1,8 @@
+{
+  "query": "-- อัพเดต fullName จาก firstNameEn และ lastNameEn\nUPDATE workers \nSET fullName = CONCAT(COALESCE(firstNameEn, ''), ' ', COALESCE(lastNameEn, ''))\nWHERE fullName IS NULL OR fullName = '';\n\n-- ลบข้อมูลนายจ้างและลูกจ้างเก่าทั้งหมดเพื่อเริ่มใหม่\nDELETE FROM workers;\nDELETE FROM employers;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute -- อัพเดต fullName จาก firstNameEn และ lastNameEn\nUPDATE workers \nSET fullName = CONCAT(COALESCE(firstNameEn, ''), ' ', COALESCE(lastNameEn, ''))\nWHERE fullName IS NULL OR fullName = '';\n\n-- ลบข้อมูลนายจ้างและลูกจ้างเก่าทั้งหมดเพื่อเริ่มใหม่\nDELETE FROM workers;\nDELETE FROM employers;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'firstnameen' in 'field list'"
+  ]
+}

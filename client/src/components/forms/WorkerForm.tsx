@@ -22,12 +22,8 @@ export default function WorkerForm() {
 
   const [formData, setFormData] = useState({
     // ข้อมูลส่วนตัว
-    titleTh: "",
-    firstNameTh: "",
-    lastNameTh: "",
-    titleEn: "",
-    firstNameEn: "",
-    lastNameEn: "",
+    title: "",
+    fullName: "",
     nationality: "",
     dateOfBirth: "",
     gender: "",
@@ -56,6 +52,7 @@ export default function WorkerForm() {
     emergencyPhone: "",
     
     // ข้อมูลการทำงาน
+    employerId: "",
     employerName: "",
     position: "",
     salary: "",
@@ -63,28 +60,21 @@ export default function WorkerForm() {
     workLocation: "",
     jobDescription: "",
     
-    // ข้อมูลการศึกษา
+    // การศึกษาและสุขภาพ
     educationLevel: "",
     educationDetails: "",
-    
-    // ข้อมูลสุขภาพ
     bloodType: "",
     allergies: "",
     medicalConditions: "",
+    
+    // หมายเหตุ
+    notes: "",
   });
-
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
 
   const resetForm = () => {
     setFormData({
-      titleTh: "",
-      firstNameTh: "",
-      lastNameTh: "",
-      titleEn: "",
-      firstNameEn: "",
-      lastNameEn: "",
+      title: "",
+      fullName: "",
       nationality: "",
       dateOfBirth: "",
       gender: "",
@@ -105,6 +95,7 @@ export default function WorkerForm() {
       email: "",
       emergencyContact: "",
       emergencyPhone: "",
+      employerId: "",
       employerName: "",
       position: "",
       salary: "",
@@ -116,29 +107,25 @@ export default function WorkerForm() {
       bloodType: "",
       allergies: "",
       medicalConditions: "",
+      notes: "",
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // ตรวจสอบข้อมูลที่จำเป็น
-    if (!formData.firstNameTh || !formData.lastNameTh || !formData.nationality || !formData.passportNo) {
-      toast.error("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
+    if (!formData.fullName || !formData.nationality || !formData.passportNo) {
+      toast.error("กรุณากรอกข้อมูลที่จำเป็น");
       return;
     }
 
     createWorker.mutate({
-      titleTh: formData.titleTh || undefined,
-      firstNameTh: formData.firstNameTh,
-      lastNameTh: formData.lastNameTh,
-      titleEn: formData.titleEn || undefined,
-      firstNameEn: formData.firstNameEn || undefined,
-      lastNameEn: formData.lastNameEn || undefined,
+      title: formData.title || undefined,
+      fullName: formData.fullName,
       nationality: formData.nationality,
-      dateOfBirth: formData.dateOfBirth || undefined,
-      gender: formData.gender ? (formData.gender as "male" | "female") : undefined,
       passportNo: formData.passportNo,
+      dateOfBirth: formData.dateOfBirth || undefined,
+      gender: (formData.gender as "male" | "female") || undefined,
       passportIssueDate: formData.passportIssueDate || undefined,
       passportExpiryDate: formData.passportExpiryDate || undefined,
       visaType: formData.visaType || undefined,
@@ -155,9 +142,10 @@ export default function WorkerForm() {
       email: formData.email || undefined,
       emergencyContact: formData.emergencyContact || undefined,
       emergencyPhone: formData.emergencyPhone || undefined,
+      employerId: formData.employerId ? Number(formData.employerId) : undefined,
       employerName: formData.employerName || undefined,
       position: formData.position || undefined,
-      salary: formData.salary ? parseInt(formData.salary) : undefined,
+      salary: formData.salary ? Number(formData.salary) : undefined,
       workStartDate: formData.workStartDate || undefined,
       workLocation: formData.workLocation || undefined,
       jobDescription: formData.jobDescription || undefined,
@@ -166,84 +154,40 @@ export default function WorkerForm() {
       bloodType: formData.bloodType || undefined,
       allergies: formData.allergies || undefined,
       medicalConditions: formData.medicalConditions || undefined,
+      notes: formData.notes || undefined,
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* ข้อมูลส่วนตัว */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลส่วนตัว</h3>
+        <h3 className="text-lg font-semibold text-foreground">ข้อมูลส่วนตัว</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="titleTh">คำนำหน้า (ไทย)</Label>
-            <Select value={formData.titleTh} onValueChange={(value) => handleChange("titleTh", value)}>
+            <Label htmlFor="title">คำนำหน้า</Label>
+            <Select value={formData.title} onValueChange={(value) => setFormData({...formData, title: value})}>
               <SelectTrigger>
-                <SelectValue placeholder="เลือก" />
+                <SelectValue placeholder="เลือกคำนำหน้า" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="นาย">นาย</SelectItem>
-                <SelectItem value="นาง">นาง</SelectItem>
-                <SelectItem value="นางสาว">นางสาว</SelectItem>
+                <SelectItem value="MR">MR</SelectItem>
+                <SelectItem value="MRS">MRS</SelectItem>
+                <SelectItem value="MISS">MISS</SelectItem>
+                <SelectItem value="MS">MS</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2 md:col-span-3">
-            <Label htmlFor="firstNameTh">ชื่อ (ไทย) <span className="text-destructive">*</span></Label>
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="fullName">ชื่อ-นามสกุล (อังกฤษ) <span className="text-destructive">*</span></Label>
             <Input
-              id="firstNameTh"
-              value={formData.firstNameTh}
-              onChange={(e) => handleChange("firstNameTh", e.target.value)}
-              placeholder="ชื่อภาษาไทย"
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-4">
-            <Label htmlFor="lastNameTh">นามสกุล (ไทย) <span className="text-destructive">*</span></Label>
-            <Input
-              id="lastNameTh"
-              value={formData.lastNameTh}
-              onChange={(e) => handleChange("lastNameTh", e.target.value)}
-              placeholder="นามสกุลภาษาไทย"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="titleEn">Title (English)</Label>
-            <Select value={formData.titleEn} onValueChange={(value) => handleChange("titleEn", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Mr.">Mr.</SelectItem>
-                <SelectItem value="Mrs.">Mrs.</SelectItem>
-                <SelectItem value="Miss">Miss</SelectItem>
-                <SelectItem value="Ms.">Ms.</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2 md:col-span-3">
-            <Label htmlFor="firstNameEn">First Name (English)</Label>
-            <Input
-              id="firstNameEn"
-              value={formData.firstNameEn}
-              onChange={(e) => handleChange("firstNameEn", e.target.value)}
-              placeholder="First name in English"
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-4">
-            <Label htmlFor="lastNameEn">Last Name (English)</Label>
-            <Input
-              id="lastNameEn"
-              value={formData.lastNameEn}
-              onChange={(e) => handleChange("lastNameEn", e.target.value)}
-              placeholder="Last name in English"
+              id="fullName"
+              value={formData.fullName}
+              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+              placeholder="เช่น JOHN DOE"
+              required
             />
           </div>
         </div>
@@ -251,14 +195,14 @@ export default function WorkerForm() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="nationality">สัญชาติ <span className="text-destructive">*</span></Label>
-            <Select value={formData.nationality} onValueChange={(value) => handleChange("nationality", value)}>
+            <Select value={formData.nationality} onValueChange={(value) => setFormData({...formData, nationality: value})} required>
               <SelectTrigger>
                 <SelectValue placeholder="เลือกสัญชาติ" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Myanmar">พม่า (Myanmar)</SelectItem>
-                <SelectItem value="Laos">ลาว (Laos)</SelectItem>
                 <SelectItem value="Cambodia">กัมพูชา (Cambodia)</SelectItem>
+                <SelectItem value="Laos">ลาว (Laos)</SelectItem>
                 <SelectItem value="Vietnam">เวียดนาม (Vietnam)</SelectItem>
               </SelectContent>
             </Select>
@@ -270,13 +214,13 @@ export default function WorkerForm() {
               id="dateOfBirth"
               type="date"
               value={formData.dateOfBirth}
-              onChange={(e) => handleChange("dateOfBirth", e.target.value)}
+              onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="gender">เพศ</Label>
-            <Select value={formData.gender} onValueChange={(value) => handleChange("gender", value)}>
+            <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
               <SelectTrigger>
                 <SelectValue placeholder="เลือกเพศ" />
               </SelectTrigger>
@@ -291,7 +235,7 @@ export default function WorkerForm() {
 
       {/* เอกสารประจำตัว */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">เอกสารประจำตัว</h3>
+        <h3 className="text-lg font-semibold text-foreground">เอกสารประจำตัว</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
@@ -299,8 +243,9 @@ export default function WorkerForm() {
             <Input
               id="passportNo"
               value={formData.passportNo}
-              onChange={(e) => handleChange("passportNo", e.target.value)}
-              placeholder="Passport Number"
+              onChange={(e) => setFormData({...formData, passportNo: e.target.value})}
+              placeholder="เช่น AB1234567"
+              required
             />
           </div>
 
@@ -310,7 +255,7 @@ export default function WorkerForm() {
               id="passportIssueDate"
               type="date"
               value={formData.passportIssueDate}
-              onChange={(e) => handleChange("passportIssueDate", e.target.value)}
+              onChange={(e) => setFormData({...formData, passportIssueDate: e.target.value})}
             />
           </div>
 
@@ -320,7 +265,7 @@ export default function WorkerForm() {
               id="passportExpiryDate"
               type="date"
               value={formData.passportExpiryDate}
-              onChange={(e) => handleChange("passportExpiryDate", e.target.value)}
+              onChange={(e) => setFormData({...formData, passportExpiryDate: e.target.value})}
             />
           </div>
         </div>
@@ -328,16 +273,12 @@ export default function WorkerForm() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="visaType">ประเภทวีซ่า</Label>
-            <Select value={formData.visaType} onValueChange={(value) => handleChange("visaType", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="เลือกประเภท" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Non-B">Non-B (ทำงาน)</SelectItem>
-                <SelectItem value="Non-O">Non-O (อื่นๆ)</SelectItem>
-                <SelectItem value="Tourist">Tourist (ท่องเที่ยว)</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              id="visaType"
+              value={formData.visaType}
+              onChange={(e) => setFormData({...formData, visaType: e.target.value})}
+              placeholder="เช่น NON-B"
+            />
           </div>
 
           <div className="space-y-2">
@@ -345,8 +286,7 @@ export default function WorkerForm() {
             <Input
               id="visaNo"
               value={formData.visaNo}
-              onChange={(e) => handleChange("visaNo", e.target.value)}
-              placeholder="Visa Number"
+              onChange={(e) => setFormData({...formData, visaNo: e.target.value})}
             />
           </div>
 
@@ -356,7 +296,7 @@ export default function WorkerForm() {
               id="visaExpiryDate"
               type="date"
               value={formData.visaExpiryDate}
-              onChange={(e) => handleChange("visaExpiryDate", e.target.value)}
+              onChange={(e) => setFormData({...formData, visaExpiryDate: e.target.value})}
             />
           </div>
         </div>
@@ -367,18 +307,17 @@ export default function WorkerForm() {
             <Input
               id="workPermitNo"
               value={formData.workPermitNo}
-              onChange={(e) => handleChange("workPermitNo", e.target.value)}
-              placeholder="Work Permit Number"
+              onChange={(e) => setFormData({...formData, workPermitNo: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="workPermitExpiryDate">วันหมดอายุใบอนุญาต</Label>
+            <Label htmlFor="workPermitExpiryDate">วันหมดอายุใบอนุญาตทำงาน</Label>
             <Input
               id="workPermitExpiryDate"
               type="date"
               value={formData.workPermitExpiryDate}
-              onChange={(e) => handleChange("workPermitExpiryDate", e.target.value)}
+              onChange={(e) => setFormData({...formData, workPermitExpiryDate: e.target.value})}
             />
           </div>
         </div>
@@ -386,37 +325,35 @@ export default function WorkerForm() {
 
       {/* ที่อยู่ในประเทศไทย */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ที่อยู่ในประเทศไทย</h3>
+        <h3 className="text-lg font-semibold text-foreground">ที่อยู่ในประเทศไทย</h3>
         
         <div className="space-y-2">
           <Label htmlFor="addressTh">ที่อยู่</Label>
           <Textarea
             id="addressTh"
             value={formData.addressTh}
-            onChange={(e) => handleChange("addressTh", e.target.value)}
+            onChange={(e) => setFormData({...formData, addressTh: e.target.value})}
             placeholder="บ้านเลขที่ ถนน ซอย"
             rows={2}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="subdistrictTh">แขวง/ตำบล</Label>
+            <Label htmlFor="subdistrictTh">ตำบล/แขวง</Label>
             <Input
               id="subdistrictTh"
               value={formData.subdistrictTh}
-              onChange={(e) => handleChange("subdistrictTh", e.target.value)}
-              placeholder="ระบุแขวง/ตำบล"
+              onChange={(e) => setFormData({...formData, subdistrictTh: e.target.value})}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="districtTh">เขต/อำเภอ</Label>
+            <Label htmlFor="districtTh">อำเภอ/เขต</Label>
             <Input
               id="districtTh"
               value={formData.districtTh}
-              onChange={(e) => handleChange("districtTh", e.target.value)}
-              placeholder="ระบุเขต/อำเภอ"
+              onChange={(e) => setFormData({...formData, districtTh: e.target.value})}
             />
           </div>
 
@@ -425,8 +362,7 @@ export default function WorkerForm() {
             <Input
               id="provinceTh"
               value={formData.provinceTh}
-              onChange={(e) => handleChange("provinceTh", e.target.value)}
-              placeholder="ระบุจังหวัด"
+              onChange={(e) => setFormData({...formData, provinceTh: e.target.value})}
             />
           </div>
 
@@ -435,9 +371,8 @@ export default function WorkerForm() {
             <Input
               id="postalCodeTh"
               value={formData.postalCodeTh}
-              onChange={(e) => handleChange("postalCodeTh", e.target.value)}
+              onChange={(e) => setFormData({...formData, postalCodeTh: e.target.value})}
               placeholder="00000"
-              maxLength={5}
             />
           </div>
         </div>
@@ -445,16 +380,16 @@ export default function WorkerForm() {
 
       {/* ข้อมูลติดต่อ */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลติดต่อ</h3>
+        <h3 className="text-lg font-semibold text-foreground">ข้อมูลติดต่อ</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">เบอร์โทรศัพท์</Label>
+            <Label htmlFor="phone">โทรศัพท์</Label>
             <Input
               id="phone"
               value={formData.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
-              placeholder="0XX-XXX-XXXX"
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              placeholder="0X-XXXX-XXXX"
             />
           </div>
 
@@ -464,28 +399,30 @@ export default function WorkerForm() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
               placeholder="example@email.com"
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="emergencyContact">ผู้ติดต่อฉุกเฉิน</Label>
             <Input
               id="emergencyContact"
               value={formData.emergencyContact}
-              onChange={(e) => handleChange("emergencyContact", e.target.value)}
-              placeholder="ชื่อผู้ติดต่อฉุกเฉิน"
+              onChange={(e) => setFormData({...formData, emergencyContact: e.target.value})}
+              placeholder="ชื่อ-นามสกุล"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="emergencyPhone">เบอร์ติดต่อฉุกเฉิน</Label>
+            <Label htmlFor="emergencyPhone">โทรศัพท์ฉุกเฉิน</Label>
             <Input
               id="emergencyPhone"
               value={formData.emergencyPhone}
-              onChange={(e) => handleChange("emergencyPhone", e.target.value)}
-              placeholder="0XX-XXX-XXXX"
+              onChange={(e) => setFormData({...formData, emergencyPhone: e.target.value})}
+              placeholder="0X-XXXX-XXXX"
             />
           </div>
         </div>
@@ -493,7 +430,7 @@ export default function WorkerForm() {
 
       {/* ข้อมูลการทำงาน */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลการทำงาน</h3>
+        <h3 className="text-lg font-semibold text-foreground">ข้อมูลการทำงาน</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -501,8 +438,7 @@ export default function WorkerForm() {
             <Input
               id="employerName"
               value={formData.employerName}
-              onChange={(e) => handleChange("employerName", e.target.value)}
-              placeholder="ชื่อบริษัท/นายจ้าง"
+              onChange={(e) => setFormData({...formData, employerName: e.target.value})}
             />
           </div>
 
@@ -511,98 +447,84 @@ export default function WorkerForm() {
             <Input
               id="position"
               value={formData.position}
-              onChange={(e) => handleChange("position", e.target.value)}
-              placeholder="ตำแหน่ง"
+              onChange={(e) => setFormData({...formData, position: e.target.value})}
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="salary">เงินเดือน (บาท)</Label>
             <Input
               id="salary"
               type="number"
               value={formData.salary}
-              onChange={(e) => handleChange("salary", e.target.value)}
-              placeholder="จำนวนเงินเดือน"
+              onChange={(e) => setFormData({...formData, salary: e.target.value})}
+              placeholder="0"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="workStartDate">วันที่เริ่มงาน</Label>
+            <Label htmlFor="workStartDate">วันเริ่มงาน</Label>
             <Input
               id="workStartDate"
               type="date"
               value={formData.workStartDate}
-              onChange={(e) => handleChange("workStartDate", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="workLocation">สถานที่ทำงาน</Label>
-            <Input
-              id="workLocation"
-              value={formData.workLocation}
-              onChange={(e) => handleChange("workLocation", e.target.value)}
-              placeholder="ที่อยู่สถานที่ทำงาน"
-            />
-          </div>
-
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="jobDescription">ลักษณะงาน</Label>
-            <Textarea
-              id="jobDescription"
-              value={formData.jobDescription}
-              onChange={(e) => handleChange("jobDescription", e.target.value)}
-              placeholder="อธิบายลักษณะงานที่ทำ"
-              rows={3}
+              onChange={(e) => setFormData({...formData, workStartDate: e.target.value})}
             />
           </div>
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="workLocation">สถานที่ทำงาน</Label>
+          <Textarea
+            id="workLocation"
+            value={formData.workLocation}
+            onChange={(e) => setFormData({...formData, workLocation: e.target.value})}
+            placeholder="ที่อยู่สถานประกอบการ"
+            rows={2}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="jobDescription">ลักษณะงาน</Label>
+          <Textarea
+            id="jobDescription"
+            value={formData.jobDescription}
+            onChange={(e) => setFormData({...formData, jobDescription: e.target.value})}
+            placeholder="รายละเอียดงานที่ทำ"
+            rows={3}
+          />
+        </div>
       </div>
 
-      {/* ข้อมูลการศึกษา */}
+      {/* การศึกษาและสุขภาพ */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลการศึกษา</h3>
+        <h3 className="text-lg font-semibold text-foreground">การศึกษาและสุขภาพ</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="educationLevel">ระดับการศึกษา</Label>
-            <Select value={formData.educationLevel} onValueChange={(value) => handleChange("educationLevel", value)}>
+            <Select value={formData.educationLevel} onValueChange={(value) => setFormData({...formData, educationLevel: value})}>
               <SelectTrigger>
-                <SelectValue placeholder="เลือกระดับ" />
+                <SelectValue placeholder="เลือกระดับการศึกษา" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="primary">ประถมศึกษา</SelectItem>
-                <SelectItem value="secondary">มัธยมศึกษา</SelectItem>
-                <SelectItem value="vocational">ปวช./ปวส.</SelectItem>
-                <SelectItem value="bachelor">ปริญญาตรี</SelectItem>
-                <SelectItem value="master">ปริญญาโท</SelectItem>
+                <SelectItem value="ประถม">ประถมศึกษา</SelectItem>
+                <SelectItem value="มัธยม">มัธยมศึกษา</SelectItem>
+                <SelectItem value="ปวช">ปวช.</SelectItem>
+                <SelectItem value="ปวส">ปวส.</SelectItem>
+                <SelectItem value="ปริญญาตรี">ปริญญาตรี</SelectItem>
+                <SelectItem value="สูงกว่าปริญญาตรี">สูงกว่าปริญญาตรี</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="educationDetails">รายละเอียดการศึกษา</Label>
-            <Input
-              id="educationDetails"
-              value={formData.educationDetails}
-              onChange={(e) => handleChange("educationDetails", e.target.value)}
-              placeholder="สาขา/สถาบัน"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* ข้อมูลสุขภาพ */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold border-b pb-2">ข้อมูลสุขภาพ</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
             <Label htmlFor="bloodType">กรุ๊ปเลือด</Label>
-            <Select value={formData.bloodType} onValueChange={(value) => handleChange("bloodType", value)}>
+            <Select value={formData.bloodType} onValueChange={(value) => setFormData({...formData, bloodType: value})}>
               <SelectTrigger>
-                <SelectValue placeholder="เลือก" />
+                <SelectValue placeholder="เลือกกรุ๊ปเลือด" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="A">A</SelectItem>
@@ -612,32 +534,60 @@ export default function WorkerForm() {
               </SelectContent>
             </Select>
           </div>
+        </div>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="allergies">อาการแพ้</Label>
-            <Input
-              id="allergies"
-              value={formData.allergies}
-              onChange={(e) => handleChange("allergies", e.target.value)}
-              placeholder="ระบุอาการแพ้ (ถ้ามี)"
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="educationDetails">รายละเอียดการศึกษา</Label>
+          <Textarea
+            id="educationDetails"
+            value={formData.educationDetails}
+            onChange={(e) => setFormData({...formData, educationDetails: e.target.value})}
+            placeholder="สถาบัน สาขา ปีที่จบ"
+            rows={2}
+          />
+        </div>
 
-          <div className="space-y-2 md:col-span-3">
-            <Label htmlFor="medicalConditions">โรคประจำตัว</Label>
-            <Textarea
-              id="medicalConditions"
-              value={formData.medicalConditions}
-              onChange={(e) => handleChange("medicalConditions", e.target.value)}
-              placeholder="ระบุโรคประจำตัว (ถ้ามี)"
-              rows={2}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="allergies">อาการแพ้</Label>
+          <Textarea
+            id="allergies"
+            value={formData.allergies}
+            onChange={(e) => setFormData({...formData, allergies: e.target.value})}
+            placeholder="ระบุอาการแพ้ (ถ้ามี)"
+            rows={2}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="medicalConditions">โรคประจำตัว</Label>
+          <Textarea
+            id="medicalConditions"
+            value={formData.medicalConditions}
+            onChange={(e) => setFormData({...formData, medicalConditions: e.target.value})}
+            placeholder="ระบุโรคประจำตัว (ถ้ามี)"
+            rows={2}
+          />
+        </div>
+      </div>
+
+      {/* หมายเหตุ */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-foreground">หมายเหตุ</h3>
+        
+        <div className="space-y-2">
+          <Label htmlFor="notes">หมายเหตุเพิ่มเติม</Label>
+          <Textarea
+            id="notes"
+            value={formData.notes}
+            onChange={(e) => setFormData({...formData, notes: e.target.value})}
+            placeholder="ข้อมูลเพิ่มเติม (ถ้ามี)"
+            rows={3}
+          />
         </div>
       </div>
 
       {/* ปุ่มบันทึก */}
-      <div className="flex justify-end gap-4 pt-4 border-t">
+      <div className="flex gap-4 justify-end pt-4 border-t">
         <Button type="button" variant="outline" onClick={resetForm}>
           ยกเลิก
         </Button>

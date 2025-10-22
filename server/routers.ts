@@ -115,12 +115,8 @@ export const appRouter = router({
     create: publicProcedure
       .input(
         z.object({
-          titleTh: z.string().optional(),
-          firstNameTh: z.string(),
-          lastNameTh: z.string(),
-          titleEn: z.string().optional(),
-          firstNameEn: z.string().optional(),
-          lastNameEn: z.string().optional(),
+          title: z.string().optional(),
+          fullName: z.string(),
           nationality: z.string(),
           dateOfBirth: z.string().transform((val) => val ? new Date(val) : undefined).optional(),
           gender: z.enum(["male", "female"]).optional(),
@@ -165,12 +161,8 @@ export const appRouter = router({
         z.object({
           id: z.number(),
           data: z.object({
-            titleTh: z.string().optional(),
-            firstNameTh: z.string().optional(),
-            lastNameTh: z.string().optional(),
-            titleEn: z.string().optional(),
-            firstNameEn: z.string().optional(),
-            lastNameEn: z.string().optional(),
+            title: z.string().optional(),
+            fullName: z.string().optional(),
             nationality: z.string().optional(),
             dateOfBirth: z.string().transform((val) => val ? new Date(val) : undefined).optional(),
             gender: z.enum(["male", "female"]).optional(),

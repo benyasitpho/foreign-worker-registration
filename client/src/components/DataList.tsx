@@ -199,7 +199,7 @@ export default function DataList() {
                       <TableRow key={worker.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-medium">
-                          {worker.firstNameTh} {worker.lastNameTh}
+                          {worker.fullName}
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{worker.nationality}</Badge>

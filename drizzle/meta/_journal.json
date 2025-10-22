@@ -15,6 +15,13 @@
       "when": 1761167595130,
       "tag": "0001_magical_overlord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761169221549,
+      "tag": "0002_classy_rhodey",
+      "breakpoints": true
     }
   ]
 }

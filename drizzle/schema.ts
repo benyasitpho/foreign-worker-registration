@@ -79,15 +79,9 @@ export type InsertEmployer = typeof employers.$inferInsert;
 export const workers = mysqlTable("workers", {
   id: int("id").autoincrement().primaryKey(),
   
-  // ข้อมูลส่วนตัว (ภาษาไทย)
-  titleTh: varchar("titleTh", { length: 50 }),
-  firstNameTh: varchar("firstNameTh", { length: 255 }).notNull(),
-  lastNameTh: varchar("lastNameTh", { length: 255 }).notNull(),
-  
-  // ข้อมูลส่วนตัว (ภาษาอังกฤษ)
-  titleEn: varchar("titleEn", { length: 50 }),
-  firstNameEn: varchar("firstNameEn", { length: 255 }),
-  lastNameEn: varchar("lastNameEn", { length: 255 }),
+  // ข้อมูลส่วนตัว
+  title: varchar("title", { length: 50 }),
+  fullName: varchar("fullName", { length: 500 }).notNull(),
   
   // ข้อมูลพื้นฐาน
   nationality: varchar("nationality", { length: 100 }).notNull(),
