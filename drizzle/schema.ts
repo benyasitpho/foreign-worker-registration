@@ -64,6 +64,9 @@ export const employers = mysqlTable("employers", {
   // ข้อมูลเพิ่มเติม
   notes: text("notes"),
   
+  // เอกสาร (JSON array of {type, url})
+  documentsUrl: text("documentsUrl"),
+  
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

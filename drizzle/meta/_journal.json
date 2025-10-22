@@ -29,6 +29,13 @@
       "when": 1761170602269,
       "tag": "0003_long_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1761173623536,
+      "tag": "0004_curly_speed_demon",
+      "breakpoints": true
     }
   ]
 }
