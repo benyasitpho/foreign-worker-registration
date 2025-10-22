@@ -150,6 +150,10 @@ export const appRouter = router({
           allergies: z.string().optional(),
           medicalConditions: z.string().optional(),
           notes: z.string().optional(),
+          employmentStatus: z.string().optional(),
+          resignationDate: z.string().transform((val) => val ? new Date(val) : undefined).optional(),
+          profilePhotoUrl: z.string().optional(),
+          documentsUrl: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {

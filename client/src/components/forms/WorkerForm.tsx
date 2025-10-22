@@ -69,7 +69,14 @@ export default function WorkerForm() {
     
     // หมายเหตุ
     notes: "",
+    
+    // สถานะการทำงาน
+    employmentStatus: "active",
+    resignationDate: "",
   });
+  
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [documents, setDocuments] = useState<File[]>([]);
 
   const resetForm = () => {
     setFormData({
@@ -108,10 +115,14 @@ export default function WorkerForm() {
       allergies: "",
       medicalConditions: "",
       notes: "",
+      employmentStatus: "active",
+      resignationDate: "",
     });
+    setProfilePhoto(null);
+    setDocuments([]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.fullName || !formData.nationality || !formData.passportNo) {
@@ -119,7 +130,41 @@ export default function WorkerForm() {
       return;
     }
 
-    createWorker.mutate({
+    try {
+      let profilePhotoUrl: string | undefined;
+      let documentsUrls: string[] = [];
+
+      // อัพโหลดรูปโปรไฟล์
+      if (profilePhoto) {
+        const formData = new FormData();
+        formData.append('file', profilePhoto);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          profilePhotoUrl = data.url;
+        }
+      }
+
+      // อัพโหลดเอกสาร
+      if (documents.length > 0) {
+        for (const doc of documents) {
+          const formData = new FormData();
+          formData.append('file', doc);
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          if (response.ok) {
+            const data = await response.json();
+            documentsUrls.push(data.url);
+          }
+        }
+      }
+
+      createWorker.mutate({
       title: formData.title || undefined,
       fullName: formData.fullName,
       nationality: formData.nationality,
@@ -155,7 +200,15 @@ export default function WorkerForm() {
       allergies: formData.allergies || undefined,
       medicalConditions: formData.medicalConditions || undefined,
       notes: formData.notes || undefined,
+      employmentStatus: formData.employmentStatus || undefined,
+      resignationDate: formData.resignationDate || undefined,
+      profilePhotoUrl: profilePhotoUrl,
+      documentsUrl: documentsUrls.length > 0 ? JSON.stringify(documentsUrls) : undefined,
     });
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาดในการอัพโหลดไฟล์");
+      console.error(error);
+    }
   };
 
   return (
@@ -567,6 +620,100 @@ export default function WorkerForm() {
             placeholder="ระบุโรคประจำตัว (ถ้ามี)"
             rows={2}
           />
+        </div>
+      </div>
+
+      {/* สถานะการทำงาน */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-foreground">สถานะการทำงาน</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="employmentStatus">สถานะ</Label>
+            <Select value={formData.employmentStatus} onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="เลือกสถานะ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">อยู่</SelectItem>
+                <SelectItem value="resigned">ออกแล้ว</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {formData.employmentStatus === "resigned" && (
+            <div className="space-y-2">
+              <Label htmlFor="resignationDate">วันที่ออก</Label>
+              <Input
+                id="resignationDate"
+                type="date"
+                value={formData.resignationDate}
+                onChange={(e) => setFormData({...formData, resignationDate: e.target.value})}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* รูปโปรไฟล์และเอกสาร */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-foreground">รูปและเอกสาร</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="profilePhoto">รูปถ่ายหน้าตรง (โปรไฟล์)</Label>
+            <Input
+              id="profilePhoto"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 5 * 1024 * 1024) {
+                    toast.error("ไฟล์รูปต้องไม่เกิน 5MB");
+                    return;
+                  }
+                  setProfilePhoto(file);
+                }
+              }}
+            />
+            {profilePhoto && (
+              <p className="text-sm text-muted-foreground">
+                เลือกไฟล์: {profilePhoto.name}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="documents">เอกสาร PDF</Label>
+            <Input
+              id="documents"
+              type="file"
+              accept=".pdf"
+              multiple
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                const validFiles = files.filter(file => {
+                  if (file.size > 10 * 1024 * 1024) {
+                    toast.error(`ไฟล์ ${file.name} ต้องไม่เกิน 10MB`);
+                    return false;
+                  }
+                  return true;
+                });
+                setDocuments(validFiles);
+              }}
+            />
+            {documents.length > 0 && (
+              <div className="text-sm text-muted-foreground">
+                <p>เลือกไฟล์: {documents.length} ไฟล์</p>
+                <ul className="list-disc list-inside">
+                  {documents.map((doc, idx) => (
+                    <li key={idx}>{doc.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

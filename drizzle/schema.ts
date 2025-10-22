@@ -136,6 +136,14 @@ export const workers = mysqlTable("workers", {
   // ข้อมูลเพิ่มเติม
   notes: text("notes"),
   
+  // สถานะการทำงาน
+  employmentStatus: varchar("employmentStatus", { length: 50 }).default("active"), // active, resigned
+  resignationDate: date("resignationDate"),
+  
+  // ไฟล์และเอกสาร
+  profilePhotoUrl: varchar("profilePhotoUrl", { length: 500 }),
+  documentsUrl: text("documentsUrl"), // JSON array of document URLs
+  
   // Timestamps
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

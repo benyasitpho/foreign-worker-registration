@@ -1,14 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
 import { Trash2, Eye } from "lucide-react";
+import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { useLocation } from "wouter";
 
 export default function DataList() {
   const utils = trpc.useUtils();
+  const [, setLocation] = useLocation();
   
   // Fetch employers and workers
   const { data: employers, isLoading: employersLoading } = trpc.employers.list.useQuery();
@@ -35,7 +37,8 @@ export default function DataList() {
     },
   });
 
-  const deleteEmployer = (id: number) => {
+  const deleteEmployer = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (confirm("คุณต้องการลบข้อมูลนายจ้างนี้หรือไม่?")) {
       deleteEmployerMutation.mutate({ id });
     }
@@ -87,7 +90,7 @@ export default function DataList() {
           <CardHeader>
             <CardTitle>รายการนายจ้างทั้งหมด</CardTitle>
             <CardDescription>
-              ข้อมูลนายจ้างที่บันทึกไว้ในระบบ
+              ข้อมูลนายจ้างที่บันทึกไว้ในระบบ (คลิกชื่อเพื่อดูรายละเอียด)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -117,14 +120,20 @@ export default function DataList() {
                   </TableHeader>
                   <TableBody>
                     {employers.map((employer, index) => (
-                      <TableRow key={employer.id}>
+                      <TableRow 
+                        key={employer.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => setLocation(`/employer/${employer.id}`)}
+                      >
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
                           <Badge variant="outline">
                             {getEmployerTypeLabel(employer.employerType)}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-medium">{employer.companyName}</TableCell>
+                        <TableCell className="font-medium text-primary">
+                          {employer.companyName}
+                        </TableCell>
                         <TableCell>{employer.taxId}</TableCell>
                         <TableCell>{employer.phone || "-"}</TableCell>
                         <TableCell>{employer.email || "-"}</TableCell>
@@ -136,14 +145,17 @@ export default function DataList() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toast.info("ฟีเจอร์ดูรายละเอียดจะพร้อมใช้งานเร็วๆ นี้")}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLocation(`/employer/${employer.id}`);
+                              }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => deleteEmployer(employer.id)}
+                              onClick={(e) => deleteEmployer(employer.id, e)}
                               className="text-destructive hover:text-destructive"
                               disabled={deleteEmployerMutation.isPending}
                             >
