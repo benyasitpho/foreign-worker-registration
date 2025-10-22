@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Upload, FileText, User } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Upload, FileText, User, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
@@ -20,21 +22,102 @@ export default function WorkerDetail() {
     onSuccess: () => {
       toast.success("อัพเดตข้อมูลเรียบร้อยแล้ว");
       refetch();
+      setIsEditing(false);
     },
     onError: (error) => {
       toast.error("เกิดข้อผิดพลาด: " + error.message);
     },
   });
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<any>({});
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingDocs, setUploadingDocs] = useState<{[key: string]: boolean}>({});
+  
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const passportInputRef = useRef<HTMLInputElement>(null);
+  const workPermitInputRef = useRef<HTMLInputElement>(null);
+  const otherInputRef = useRef<HTMLInputElement>(null);
+
+  const handleEdit = () => {
+    setFormData({
+      title: worker?.title || "",
+      fullName: worker?.fullName || "",
+      nationality: worker?.nationality || "",
+      dateOfBirth: worker?.dateOfBirth ? new Date(worker.dateOfBirth).toISOString().split('T')[0] : "",
+      gender: worker?.gender || "",
+      passportNo: worker?.passportNo || "",
+      passportIssueDate: worker?.passportIssueDate ? new Date(worker.passportIssueDate).toISOString().split('T')[0] : "",
+      passportExpiryDate: worker?.passportExpiryDate ? new Date(worker.passportExpiryDate).toISOString().split('T')[0] : "",
+      visaType: worker?.visaType || "",
+      visaNo: worker?.visaNo || "",
+      visaExpiryDate: worker?.visaExpiryDate ? new Date(worker.visaExpiryDate).toISOString().split('T')[0] : "",
+      workPermitNo: worker?.workPermitNo || "",
+      workPermitExpiryDate: worker?.workPermitExpiryDate ? new Date(worker.workPermitExpiryDate).toISOString().split('T')[0] : "",
+      phone: worker?.phone || "",
+      email: worker?.email || "",
+      addressTh: worker?.addressTh || "",
+      subdistrictTh: worker?.subdistrictTh || "",
+      districtTh: worker?.districtTh || "",
+      provinceTh: worker?.provinceTh || "",
+      postalCodeTh: worker?.postalCodeTh || "",
+      employerName: worker?.employerName || "",
+      position: worker?.position || "",
+      salary: worker?.salary || "",
+      workStartDate: worker?.workStartDate ? new Date(worker.workStartDate).toISOString().split('T')[0] : "",
+      employmentStatus: worker?.employmentStatus || "active",
+      resignationDate: worker?.resignationDate ? new Date(worker.resignationDate).toISOString().split('T')[0] : "",
+      notes: worker?.notes || "",
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (!formData.fullName || !formData.nationality || !formData.passportNo) {
+      toast.error("กรุณากรอกข้อมูลที่จำเป็น");
+      return;
+    }
+
+    updateWorker.mutate({
+      id: workerId,
+      data: {
+        title: formData.title || undefined,
+        fullName: formData.fullName,
+        nationality: formData.nationality,
+        dateOfBirth: formData.dateOfBirth || undefined,
+        gender: formData.gender || undefined,
+        passportNo: formData.passportNo,
+        passportIssueDate: formData.passportIssueDate || undefined,
+        passportExpiryDate: formData.passportExpiryDate || undefined,
+        visaType: formData.visaType || undefined,
+        visaNo: formData.visaNo || undefined,
+        visaExpiryDate: formData.visaExpiryDate || undefined,
+        workPermitNo: formData.workPermitNo || undefined,
+        workPermitExpiryDate: formData.workPermitExpiryDate || undefined,
+        phone: formData.phone || undefined,
+        email: formData.email || undefined,
+        addressTh: formData.addressTh || undefined,
+        subdistrictTh: formData.subdistrictTh || undefined,
+        districtTh: formData.districtTh || undefined,
+        provinceTh: formData.provinceTh || undefined,
+        postalCodeTh: formData.postalCodeTh || undefined,
+        employerName: formData.employerName || undefined,
+        position: formData.position || undefined,
+        salary: formData.salary ? Number(formData.salary) : undefined,
+        workStartDate: formData.workStartDate || undefined,
+        employmentStatus: formData.employmentStatus || undefined,
+        resignationDate: formData.resignationDate || undefined,
+        notes: formData.notes || undefined,
+      },
+    });
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("ไฟล์รูปต้องไม่เกิน 5MB");
+      toast.error("ไฟล์ต้องไม่เกิน 5MB");
       return;
     }
 
@@ -63,6 +146,7 @@ export default function WorkerDetail() {
       console.error(error);
     } finally {
       setUploadingPhoto(false);
+      if (photoInputRef.current) photoInputRef.current.value = "";
     }
   };
 
@@ -71,7 +155,7 @@ export default function WorkerDetail() {
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("ไฟล์เอกสารต้องไม่เกิน 10MB");
+      toast.error("ไฟล์ต้องไม่เกิน 10MB");
       return;
     }
 
@@ -138,6 +222,15 @@ export default function WorkerDetail() {
     }
   };
 
+  const getTitleLabel = (title: string | null) => {
+    const titles: Record<string, string> = {
+      "MR": "MR",
+      "MRS": "MRS",
+      "MISS": "MISS",
+    };
+    return titles[title || ""] || "-";
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background p-6">
@@ -190,6 +283,22 @@ export default function WorkerDetail() {
                 </p>
               </div>
             </div>
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    <X className="mr-2 h-4 w-4" />
+                    ยกเลิก
+                  </Button>
+                  <Button onClick={handleSave} disabled={updateWorker.isPending}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {updateWorker.isPending ? "กำลังบันทึก..." : "บันทึก"}
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={handleEdit}>แก้ไขข้อมูล</Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -216,22 +325,25 @@ export default function WorkerDetail() {
               )}
             </div>
             <div className="mt-4 w-full max-w-md">
-              <Label htmlFor="profilePhoto" className="block text-center mb-2">
-                อัพโหลดรูปถ่ายหน้าตรง (ขนาด 2x2 นิ้ว)
-              </Label>
-              <Input
-                id="profilePhoto"
+              <input
+                ref={photoInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,.pdf"
                 onChange={handlePhotoUpload}
-                disabled={uploadingPhoto}
-                className="cursor-pointer"
+                className="hidden"
               />
-              {uploadingPhoto && (
-                <p className="text-sm text-muted-foreground text-center mt-2">
-                  กำลังอัพโหลด...
-                </p>
-              )}
+              <Button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                className="w-full"
+                variant="outline"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {uploadingPhoto ? "กำลังอัพโหลด..." : "อัพโหลดรูปถ่ายหน้าตรง (JPG หรือ PDF)"}
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                ขนาด 2x2 นิ้ว, ไฟล์ไม่เกิน 5MB
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -242,54 +354,232 @@ export default function WorkerDetail() {
             <CardTitle>ข้อมูลส่วนตัว</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-muted-foreground">ชื่อ-นามสกุล</Label>
-                <p className="font-medium">{worker.fullName}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">สัญชาติ</Label>
-                <p className="font-medium">{worker.nationality}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">เพศ</Label>
-                <p className="font-medium">{worker.gender === "male" ? "ชาย" : worker.gender === "female" ? "หญิง" : "-"}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">วันเกิด</Label>
-                <p className="font-medium">{formatDate(worker.dateOfBirth)}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">เลขที่หนังสือเดินทาง</Label>
-                <p className="font-medium">{worker.passportNo}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">โทรศัพท์</Label>
-                <p className="font-medium">{worker.phone || "-"}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">อีเมล</Label>
-                <p className="font-medium">{worker.email || "-"}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">สถานะการทำงาน</Label>
-                <div>{getStatusBadge(worker.employmentStatus)}</div>
-              </div>
-              {worker.employmentStatus === "resigned" && worker.resignationDate && (
-                <div>
-                  <Label className="text-muted-foreground">วันที่ออก</Label>
-                  <p className="font-medium">{formatDate(worker.resignationDate)}</p>
+            {isEditing ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">คำนำหน้าชื่อ *</Label>
+                  <Select value={formData.title} onValueChange={(value) => setFormData({...formData, title: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกคำนำหน้า" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MR">MR</SelectItem>
+                      <SelectItem value="MRS">MRS</SelectItem>
+                      <SelectItem value="MISS">MISS</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
-              <div>
-                <Label className="text-muted-foreground">นายจ้าง</Label>
-                <p className="font-medium">{worker.employerName || "-"}</p>
+
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">ชื่อ-นามสกุล (อังกฤษ) *</Label>
+                  <Input
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                    placeholder="ระบุชื่อ-นามสกุล"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="nationality">สัญชาติ *</Label>
+                  <Input
+                    id="nationality"
+                    value={formData.nationality}
+                    onChange={(e) => setFormData({...formData, nationality: e.target.value})}
+                    placeholder="ระบุสัญชาติ"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="gender">เพศ</Label>
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({...formData, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกเพศ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">ชาย</SelectItem>
+                      <SelectItem value="female">หญิง</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth">วันเกิด</Label>
+                  <Input
+                    id="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="passportNo">เลขที่หนังสือเดินทาง *</Label>
+                  <Input
+                    id="passportNo"
+                    value={formData.passportNo}
+                    onChange={(e) => setFormData({...formData, passportNo: e.target.value})}
+                    placeholder="ระบุเลขที่พาสปอร์ต"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="passportIssueDate">วันที่ออกพาสปอร์ต</Label>
+                  <Input
+                    id="passportIssueDate"
+                    type="date"
+                    value={formData.passportIssueDate}
+                    onChange={(e) => setFormData({...formData, passportIssueDate: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="passportExpiryDate">วันหมดอายุพาสปอร์ต</Label>
+                  <Input
+                    id="passportExpiryDate"
+                    type="date"
+                    value={formData.passportExpiryDate}
+                    onChange={(e) => setFormData({...formData, passportExpiryDate: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">โทรศัพท์</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    placeholder="ระบุเบอร์โทรศัพท์"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">อีเมล</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    placeholder="ระบุอีเมล"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="employerName">นายจ้าง</Label>
+                  <Input
+                    id="employerName"
+                    value={formData.employerName}
+                    onChange={(e) => setFormData({...formData, employerName: e.target.value})}
+                    placeholder="ระบุชื่อนายจ้าง"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="position">ตำแหน่ง</Label>
+                  <Input
+                    id="position"
+                    value={formData.position}
+                    onChange={(e) => setFormData({...formData, position: e.target.value})}
+                    placeholder="ระบุตำแหน่งงาน"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="employmentStatus">สถานะการทำงาน</Label>
+                  <Select value={formData.employmentStatus} onValueChange={(value) => setFormData({...formData, employmentStatus: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="เลือกสถานะ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">อยู่</SelectItem>
+                      <SelectItem value="resigned">ออกแล้ว</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {formData.employmentStatus === "resigned" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="resignationDate">วันที่ออก</Label>
+                    <Input
+                      id="resignationDate"
+                      type="date"
+                      value={formData.resignationDate}
+                      onChange={(e) => setFormData({...formData, resignationDate: e.target.value})}
+                    />
+                  </div>
+                )}
+
+                <div className="col-span-full space-y-2">
+                  <Label htmlFor="notes">หมายเหตุ</Label>
+                  <Textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                    placeholder="ข้อมูลเพิ่มเติม"
+                    rows={3}
+                  />
+                </div>
               </div>
-              <div>
-                <Label className="text-muted-foreground">ตำแหน่ง</Label>
-                <p className="font-medium">{worker.position || "-"}</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">คำนำหน้าชื่อ</Label>
+                  <p className="font-medium">{getTitleLabel(worker.title)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">ชื่อ-นามสกุล</Label>
+                  <p className="font-medium">{worker.fullName}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">สัญชาติ</Label>
+                  <p className="font-medium">{worker.nationality}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">เพศ</Label>
+                  <p className="font-medium">{worker.gender === "male" ? "ชาย" : worker.gender === "female" ? "หญิง" : "-"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">วันเกิด</Label>
+                  <p className="font-medium">{formatDate(worker.dateOfBirth)}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">เลขที่หนังสือเดินทาง</Label>
+                  <p className="font-medium">{worker.passportNo}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">โทรศัพท์</Label>
+                  <p className="font-medium">{worker.phone || "-"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">อีเมล</Label>
+                  <p className="font-medium">{worker.email || "-"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">สถานะการทำงาน</Label>
+                  <div>{getStatusBadge(worker.employmentStatus)}</div>
+                </div>
+                {worker.employmentStatus === "resigned" && worker.resignationDate && (
+                  <div>
+                    <Label className="text-muted-foreground">วันที่ออก</Label>
+                    <p className="font-medium">{formatDate(worker.resignationDate)}</p>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-muted-foreground">นายจ้าง</Label>
+                  <p className="font-medium">{worker.employerName || "-"}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">ตำแหน่ง</Label>
+                  <p className="font-medium">{worker.position || "-"}</p>
+                </div>
+                {worker.notes && (
+                  <div className="col-span-full">
+                    <Label className="text-muted-foreground">หมายเหตุ</Label>
+                    <p className="font-medium">{worker.notes}</p>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -297,7 +587,7 @@ export default function WorkerDetail() {
         <Card>
           <CardHeader>
             <CardTitle>เอกสารประกอบ</CardTitle>
-            <CardDescription>อัพโหลดเอกสารสำคัญของลูกจ้าง</CardDescription>
+            <CardDescription>อัพโหลดเอกสารสำคัญของลูกจ้าง (JPG หรือ PDF)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Passport */}
@@ -308,16 +598,22 @@ export default function WorkerDetail() {
                   <Label className="text-base font-semibold">1. พาสปอร์ต</Label>
                 </div>
               </div>
-              <Input
+              <input
+                ref={passportInputRef}
                 type="file"
-                accept=".pdf"
+                accept="image/*,.pdf"
                 onChange={(e) => handleDocumentUpload(e, "passport")}
-                disabled={uploadingDocs["passport"]}
-                className="cursor-pointer"
+                className="hidden"
               />
-              {uploadingDocs["passport"] && (
-                <p className="text-sm text-muted-foreground mt-2">กำลังอัพโหลด...</p>
-              )}
+              <Button
+                onClick={() => passportInputRef.current?.click()}
+                disabled={uploadingDocs["passport"]}
+                variant="outline"
+                className="w-full"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {uploadingDocs["passport"] ? "กำลังอัพโหลด..." : "เพิ่มไฟล์พาสปอร์ต"}
+              </Button>
               {getDocumentsByType("passport").length > 0 && (
                 <div className="mt-3 space-y-2">
                   <p className="text-sm font-medium">ไฟล์ที่อัพโหลด:</p>
@@ -345,16 +641,22 @@ export default function WorkerDetail() {
                   <Label className="text-base font-semibold">2. ใบอนุญาตทำงาน</Label>
                 </div>
               </div>
-              <Input
+              <input
+                ref={workPermitInputRef}
                 type="file"
-                accept=".pdf"
+                accept="image/*,.pdf"
                 onChange={(e) => handleDocumentUpload(e, "work_permit")}
-                disabled={uploadingDocs["work_permit"]}
-                className="cursor-pointer"
+                className="hidden"
               />
-              {uploadingDocs["work_permit"] && (
-                <p className="text-sm text-muted-foreground mt-2">กำลังอัพโหลด...</p>
-              )}
+              <Button
+                onClick={() => workPermitInputRef.current?.click()}
+                disabled={uploadingDocs["work_permit"]}
+                variant="outline"
+                className="w-full"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {uploadingDocs["work_permit"] ? "กำลังอัพโหลด..." : "เพิ่มไฟล์ใบอนุญาตทำงาน"}
+              </Button>
               {getDocumentsByType("work_permit").length > 0 && (
                 <div className="mt-3 space-y-2">
                   <p className="text-sm font-medium">ไฟล์ที่อัพโหลด:</p>
@@ -382,16 +684,22 @@ export default function WorkerDetail() {
                   <Label className="text-base font-semibold">3. เอกสารอื่นๆ</Label>
                 </div>
               </div>
-              <Input
+              <input
+                ref={otherInputRef}
                 type="file"
-                accept=".pdf"
+                accept="image/*,.pdf"
                 onChange={(e) => handleDocumentUpload(e, "other")}
-                disabled={uploadingDocs["other"]}
-                className="cursor-pointer"
+                className="hidden"
               />
-              {uploadingDocs["other"] && (
-                <p className="text-sm text-muted-foreground mt-2">กำลังอัพโหลด...</p>
-              )}
+              <Button
+                onClick={() => otherInputRef.current?.click()}
+                disabled={uploadingDocs["other"]}
+                variant="outline"
+                className="w-full"
+              >
+                <Upload className="mr-2 h-4 w-4" />
+                {uploadingDocs["other"] ? "กำลังอัพโหลด..." : "เพิ่มไฟล์เอกสารอื่นๆ"}
+              </Button>
               {getDocumentsByType("other").length > 0 && (
                 <div className="mt-3 space-y-2">
                   <p className="text-sm font-medium">ไฟล์ที่อัพโหลด:</p>

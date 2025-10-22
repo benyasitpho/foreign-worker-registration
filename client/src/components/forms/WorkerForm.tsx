@@ -125,8 +125,8 @@ export default function WorkerForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.fullName || !formData.nationality || !formData.passportNo) {
-      toast.error("กรุณากรอกข้อมูลที่จำเป็น");
+    if (!formData.title || !formData.fullName || !formData.nationality || !formData.passportNo) {
+      toast.error("กรุณากรอกข้อมูลที่จำเป็น (คำนำหน้า, ชื่อ-นามสกุล, สัญชาติ, เลขที่พาสปอร์ต)");
       return;
     }
 
@@ -219,7 +219,7 @@ export default function WorkerForm() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="title">คำนำหน้า</Label>
+            <Label htmlFor="title">คำนำหน้าชื่อ *</Label>
             <Select value={formData.title} onValueChange={(value) => setFormData({...formData, title: value})}>
               <SelectTrigger>
                 <SelectValue placeholder="เลือกคำนำหน้า" />
@@ -228,7 +228,6 @@ export default function WorkerForm() {
                 <SelectItem value="MR">MR</SelectItem>
                 <SelectItem value="MRS">MRS</SelectItem>
                 <SelectItem value="MISS">MISS</SelectItem>
-                <SelectItem value="MS">MS</SelectItem>
               </SelectContent>
             </Select>
           </div>
