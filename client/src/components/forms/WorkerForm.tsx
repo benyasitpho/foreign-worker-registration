@@ -6,17 +6,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { CheckCircle, XCircle } from "lucide-react";
 
 export default function WorkerForm() {
   const utils = trpc.useUtils();
   const createWorker = trpc.workers.create.useMutation({
     onSuccess: () => {
-      toast.success("บันทึกข้อมูลลูกจ้างเรียบร้อยแล้ว");
+      toast.success("บันทึกข้อมูลลูกจ้างเรียบร้อยแล้ว", {
+        icon: <CheckCircle className="text-green-500" />,
+      });
       utils.workers.list.invalidate();
       resetForm();
     },
     onError: (error) => {
-      toast.error("เกิดข้อผิดพลาด: " + error.message);
+      toast.error("เกิดข้อผิดพลาด: " + error.message, {
+        icon: <XCircle className="text-red-500" />,
+      });
     },
   });
 
@@ -290,8 +295,8 @@ export default function WorkerForm() {
                 <SelectValue placeholder="เลือกเพศ" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">ชาย</SelectItem>
-                <SelectItem value="female">หญิง</SelectItem>
+                <SelectItem value="male" className="bg-blue-50 hover:bg-blue-100 data-[state=checked]:bg-blue-200">ชาย</SelectItem>
+                <SelectItem value="female" className="bg-pink-50 hover:bg-pink-100 data-[state=checked]:bg-pink-200">หญิง</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -647,8 +652,8 @@ export default function WorkerForm() {
                 <SelectValue placeholder="เลือกสถานะ" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">อยู่</SelectItem>
-                <SelectItem value="resigned">ออกแล้ว</SelectItem>
+                <SelectItem value="active" className="bg-green-50 hover:bg-green-100 data-[state=checked]:bg-green-200">อยู่</SelectItem>
+                <SelectItem value="resigned" className="bg-red-50 hover:bg-red-100 data-[state=checked]:bg-red-200">ออกแล้ว</SelectItem>
               </SelectContent>
             </Select>
           </div>

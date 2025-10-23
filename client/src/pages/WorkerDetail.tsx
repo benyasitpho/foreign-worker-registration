@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Upload, FileText, User, Save, X } from "lucide-react";
+import { ArrowLeft, Upload, FileText, User, Save, X, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
@@ -20,12 +20,16 @@ export default function WorkerDetail() {
   const { data: worker, isLoading, refetch } = trpc.workers.getById.useQuery({ id: workerId });
   const updateWorker = trpc.workers.update.useMutation({
     onSuccess: () => {
-      toast.success("อัพเดตข้อมูลเรียบร้อยแล้ว");
+      toast.success("อัพเดตข้อมูลเรียบร้อยแล้ว", {
+        icon: <CheckCircle className="text-green-500" />,
+      });
       refetch();
       setIsEditing(false);
     },
     onError: (error) => {
-      toast.error("เกิดข้อผิดพลาด: " + error.message);
+      toast.error("เกิดข้อผิดพลาด: " + error.message, {
+        icon: <XCircle className="text-red-500" />,
+      });
     },
   });
 
@@ -411,10 +415,10 @@ export default function WorkerDetail() {
                     <SelectTrigger>
                       <SelectValue placeholder="เลือกเพศ" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">ชาย</SelectItem>
-                      <SelectItem value="female">หญิง</SelectItem>
-                    </SelectContent>
+                      <SelectContent>
+                        <SelectItem value="male" className="bg-blue-50 hover:bg-blue-100 data-[state=checked]:bg-blue-200">ชาย</SelectItem>
+                        <SelectItem value="female" className="bg-pink-50 hover:bg-pink-100 data-[state=checked]:bg-pink-200">หญิง</SelectItem>
+                      </SelectContent>
                   </Select>
                 </div>
 
@@ -506,8 +510,8 @@ export default function WorkerDetail() {
                       <SelectValue placeholder="เลือกสถานะ" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">อยู่</SelectItem>
-                      <SelectItem value="resigned">ออกแล้ว</SelectItem>
+                      <SelectItem value="active" className="bg-green-50 hover:bg-green-100 data-[state=checked]:bg-green-200">อยู่</SelectItem>
+                      <SelectItem value="resigned" className="bg-red-50 hover:bg-red-100 data-[state=checked]:bg-red-200">ออกแล้ว</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

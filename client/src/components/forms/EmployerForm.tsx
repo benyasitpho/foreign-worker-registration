@@ -6,18 +6,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
-import { Upload, X } from "lucide-react";
+import { Upload, X, CheckCircle, XCircle } from "lucide-react";
 
 export default function EmployerForm() {
   const utils = trpc.useUtils();
   const createEmployer = trpc.employers.create.useMutation({
     onSuccess: () => {
-      toast.success("บันทึกข้อมูลนายจ้างเรียบร้อยแล้ว");
+      toast.success("บันทึกข้อมูลนายจ้างเรียบร้อยแล้ว", {
+        icon: <CheckCircle className="text-green-500" />,
+      });
       utils.employers.list.invalidate();
       resetForm();
     },
     onError: (error) => {
-      toast.error("เกิดข้อผิดพลาด: " + error.message);
+      toast.error("เกิดข้อผิดพลาด: " + error.message, {
+        icon: <XCircle className="text-red-500" />,
+      });
     },
   });
 
@@ -164,9 +168,9 @@ export default function EmployerForm() {
                 <SelectValue placeholder="เลือกประเภทนายจ้าง" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="individual">บุคคลธรรมดา</SelectItem>
-                <SelectItem value="company">นิติบุคคล</SelectItem>
-                <SelectItem value="partnership">ห้างหุ้นส่วน</SelectItem>
+                <SelectItem value="individual" className="bg-blue-50 hover:bg-blue-100 data-[state=checked]:bg-blue-200">บุคคลธรรมดา</SelectItem>
+                <SelectItem value="company" className="bg-green-50 hover:bg-green-100 data-[state=checked]:bg-green-200">นิติบุคคล</SelectItem>
+                <SelectItem value="partnership" className="bg-purple-50 hover:bg-purple-100 data-[state=checked]:bg-purple-200">ห้างหุ้นส่วน</SelectItem>
               </SelectContent>
             </Select>
           </div>

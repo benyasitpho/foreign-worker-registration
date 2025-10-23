@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, User, Building2, Phone, Mail, MapPin, Upload, FileText, Eye, Edit, Save, X } from "lucide-react";
+import { ArrowLeft, User, Building2, Phone, Mail, MapPin, Upload, FileText, Eye, Edit, Save, X, CheckCircle, XCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
@@ -26,12 +26,16 @@ export default function EmployerDetail() {
 
   const updateEmployer = trpc.employers.update.useMutation({
     onSuccess: () => {
-      toast.success("บันทึกข้อมูลเรียบร้อยแล้ว");
+      toast.success("บันทึกข้อมูลเรียบร้อยแล้ว", {
+        icon: <CheckCircle className="text-green-500" />,
+      });
       trpc.useContext().employers.getById.invalidate({ id: employerId });
       setIsEditing(false);
     },
     onError: (error) => {
-      toast.error("เกิดข้อผิดพลาด: " + error.message);
+      toast.error("เกิดข้อผิดพลาด: " + error.message, {
+        icon: <XCircle className="text-red-500" />,
+      });
     },
   });
 
@@ -319,9 +323,9 @@ export default function EmployerDetail() {
                           <SelectValue placeholder="เลือกประเภทนายจ้าง" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="individual">บุคคลธรรมดา</SelectItem>
-                          <SelectItem value="company">นิติบุคคล</SelectItem>
-                          <SelectItem value="partnership">ห้างหุ้นส่วน</SelectItem>
+                          <SelectItem value="individual" className="bg-blue-50 hover:bg-blue-100 data-[state=checked]:bg-blue-200">บุคคลธรรมดา</SelectItem>
+                          <SelectItem value="company" className="bg-green-50 hover:bg-green-100 data-[state=checked]:bg-green-200">นิติบุคคล</SelectItem>
+                          <SelectItem value="partnership" className="bg-purple-50 hover:bg-purple-100 data-[state=checked]:bg-purple-200">ห้างหุ้นส่วน</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
