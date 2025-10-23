@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE employers SET numberOfEmployees = (SELECT COUNT(*) FROM workers WHERE employerId = 10001) WHERE id = 10001;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute UPDATE employers SET numberOfEmployees = (SELECT COUNT(*) FROM workers WHERE employerId = 10001) WHERE id = 10001;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1536
+}

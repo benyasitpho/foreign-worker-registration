@@ -1,4 +1,4 @@
-import { createEmployer, createWorker } from '../server/db.js';
+import { createWorker } from '../server/db.js';
 import { storagePut } from '../server/storage.js';
 import fs from 'fs';
 import path from 'path';
@@ -13,56 +13,26 @@ async function uploadFile(filePath: string): Promise<string> {
 }
 
 async function main() {
-  console.log('Starting company registration...');
+  console.log('Adding employee to existing company...');
 
   // Upload documents
   console.log('Uploading documents...');
-  const companyDocUrl = await uploadFile('/home/ubuntu/foreign-worker-registration/20.09.67หนังสือรับรองบริษัทชนม์ณกานต์.pdf');
   const photoUrl = await uploadFile('/home/ubuntu/foreign-worker-registration/S__8683584.jpg');
   const alienIdUrl = await uploadFile('/home/ubuntu/foreign-worker-registration/S__8683586.jpg');
 
   console.log('Documents uploaded successfully');
 
-  // Register employer (Company)
-  console.log('Registering company employer...');
-  const employer = await createEmployer({
-    employerType: 'company',
-    companyName: 'บริษัท ชนม์ณกานต์ จำกัด',
-    taxId: '0105567090198', // From company registration
-    registrationNumber: '0105567090198',
-    contactPerson: null,
-    contactPosition: null,
-    phone: '0000000000',
-    email: null,
-    fax: null,
-    address: null,
-    subdistrict: null,
-    district: null,
-    province: null,
-    postalCode: null,
-    businessType: null,
-    numberOfEmployees: 1,
-    capitalAmount: null,
-    notes: 'จดทะเบียนเมื่อ 20 กันยายน 2567',
-    documentsUrl: JSON.stringify([
-      { type: 'companyRegistration', url: companyDocUrl }
-    ]),
-    createdBy: null,
-  });
-
-  console.log('Company employer registered:', employer);
-
-  // Register employee (worker) - LEM SARATT
-  console.log('Registering employee...');
+  // Register employee to existing company (ID: 10001 - บริษัท ชนม์ณกานต์ จำกัด)
+  console.log('Registering employee to company ID: 10001...');
   const employee = await createWorker({
-    employerId: employer.id,
+    employerId: 10001, // Existing company
     title: 'Mr.',
     fullName: 'LEM SARATT',
-    alienId: '1909894318', // From alien ID card
+    alienId: '1909894318',
     nationality: 'กัมพูชา',
     dateOfBirth: new Date('2006-09-07'),
     gender: 'male',
-    passportNo: 'IDKHM1909894318', // Using alien ID as passport equivalent
+    passportNo: 'IDKHM1909894318',
     passportIssueDate: null,
     passportExpiryDate: null,
     visaType: null,
@@ -79,7 +49,7 @@ async function main() {
     email: null,
     emergencyContact: null,
     emergencyPhone: null,
-    employerName: employer.companyName,
+    employerName: 'บริษัท ชนม์ณกานต์ จำกัด',
     position: 'WORKER',
     salary: null,
     workStartDate: null,
@@ -102,8 +72,7 @@ async function main() {
   });
 
   console.log('Employee registered:', employee);
-  console.log('\n✅ Company registration completed successfully!');
-  console.log(`Employer ID: ${employer.id}`);
+  console.log('\n✅ Employee added successfully!');
   console.log(`Employee ID: ${employee.id}`);
 }
 
