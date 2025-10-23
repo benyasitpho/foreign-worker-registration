@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, fullName, alienId, passportNo, nationality FROM workers WHERE alienId IS NOT NULL LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute SELECT id, fullName, alienId, passportNo, nationality FROM workers WHERE alienId IS NOT NULL LIMIT 10",
+  "rows": [
+    {
+      "id": "30001",
+      "fullName": "PHOUY KOMSORT",
+      "alienId": "0 0104 91276 73 7",
+      "passportNo": "N00963482",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30002",
+      "fullName": "LOEURB RASE",
+      "alienId": "6 6814 70000 87 4",
+      "passportNo": "T0930872",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30003",
+      "fullName": "LAY SOCHEA",
+      "alienId": "6 6814 70000 95 8",
+      "passportNo": "N00973104",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30004",
+      "fullName": "PHUOY SUON",
+      "alienId": "0 0104 91276 74 5",
+      "passportNo": "T0648682",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30005",
+      "fullName": "TO TOEUY",
+      "alienId": "2 5561 30048 25 4",
+      "passportNo": "N01196561",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30006",
+      "fullName": "DY PHANNA",
+      "alienId": "0 0130 61782 82 6",
+      "passportNo": "N1855354",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30007",
+      "fullName": "SRENG KONGKEA",
+      "alienId": "0 0130 61671 83 8",
+      "passportNo": "T0766709",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30008",
+      "fullName": "PEP CHAMROEN",
+      "alienId": "0 0110 11408 46 5",
+      "passportNo": "N1785752",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30009",
+      "fullName": "KONG NY",
+      "alienId": "0 0110 11408 56 2",
+      "passportNo": "N1785994",
+      "nationality": "Cambodia"
+    },
+    {
+      "id": "30010",
+      "fullName": "SUY LY",
+      "alienId": "6 6853 70000 06 0",
+      "passportNo": "T0982037",
+      "nationality": "Cambodia"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfullName\talienId\tpassportNo\tnationality\n30001\tPHOUY KOMSORT\t0 0104 91276 73 7\tN00963482\tCambodia\n30002\tLOEURB RASE\t6 6814 70000 87 4\tT0930872\tCambodia\n30003\tLAY SOCHEA\t6 6814 70000 95 8\tN00973104\tCambodia\n30004\tPHUOY SUON\t0 0104 91276 74 5\tT0648682\tCambodia\n30005\tTO TOEUY\t2 5561 30048 25 4\tN01196561\tCambodia\n30006\tDY PHANNA\t0 0130 61782 82 6\tN1855354\tCambodia\n30007\tSRENG KONGKEA\t0 0130 61671 83 8\tT0766709\tCambodia\n30008\tPEP CHAMROEN\t0 0110 11408 46 5\tN1785752\tCambodia\n30009\tKONG NY\t0 0110 11408 56 2\tN1785994\tCambodia\n30010\tSUY LY\t6 6853 70000 06 0\tT0982037\tCambodia\n",
+  "stderr": "",
+  "execution_time_ms": 1722
+}
