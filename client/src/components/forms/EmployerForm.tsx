@@ -65,6 +65,7 @@ export default function EmployerForm() {
   });
 
   const handleChange = (field: string, value: string) => {
+    console.log('handleChange:', field, '=', value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -102,32 +103,63 @@ export default function EmployerForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('handleSubmit called');
+    console.log('formData state:', formData);
+    
     if (!formData.employerType || !formData.companyName || !formData.taxId) {
+      console.log('Validation failed:', { 
+        employerType: formData.employerType, 
+        companyName: formData.companyName, 
+        taxId: formData.taxId 
+      });
       toast.error("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
       return;
     }
 
     try {
-      // อัพโหลดเอกสารทั้งหมด
+      // อัพโหลดเอกสารทั้งหมด (ถ้ามี)
       const uploadedDocs: Array<{type: string, url: string}> = [];
       
-      for (const [key, file] of Object.entries(documents)) {
+      // อัพโหลดไฟล์ในพื้นหลัง (ไม่บล็อกการบันทึกข้อมูล)
+      const uploadPromises = Object.entries(documents).map(async ([key, file]) => {
         if (file) {
-          const formData = new FormData();
-          formData.append('file', file);
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-          });
+          try {
+            console.log('Uploading file:', key, file.name);
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+            });
 
-          if (response.ok) {
-            const data = await response.json();
-            uploadedDocs.push({ type: key, url: data.url });
+            console.log('Upload response status:', response.status);
+            if (response.ok) {
+              const data = await response.json();
+              console.log('Upload success:', data);
+              return { type: key, url: data.url };
+            } else {
+              const errorText = await response.text();
+              console.error('Upload failed:', errorText);
+              return null;
+            }
+          } catch (error) {
+            console.error('Upload error:', error);
+            return null;
           }
         }
-      }
+        return null;
+      });
+      
+      // รอให้อัพโหลดเสร็จทั้งหมด (แต่ไม่บล็อกถ้ามี error)
+      const results = await Promise.allSettled(uploadPromises);
+      results.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value) {
+          uploadedDocs.push(result.value);
+        }
+      });
 
-      // สร้างข้อมูลนายจ้างพร้อม URL เอกสาร
+      // สร้างข้อมูลนายจ้าง (เอกสารเป็น optional)
+      console.log('Creating employer with docs:', uploadedDocs);
       createEmployer.mutate({
         employerType: formData.employerType as "individual" | "company" | "partnership",
         companyName: formData.companyName,

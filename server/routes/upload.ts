@@ -1,12 +1,28 @@
 import { Router } from "express";
 import multer from "multer";
-import { storagePut } from "../storage";
+import path from "path";
+import fs from "fs";
 
 const router = Router();
 
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Configure multer for file uploads
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const timestamp = Date.now();
+      const filename = `${timestamp}-${file.originalname}`;
+      cb(null, filename);
+    },
+  }),
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
@@ -19,17 +35,12 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const file = req.file;
-    const timestamp = Date.now();
-    const filename = `${timestamp}-${file.originalname}`;
-    const key = `workers/${filename}`;
-
-    // Upload to S3
-    const result = await storagePut(key, file.buffer, file.mimetype);
+    const url = `/uploads/${file.filename}`;
 
     res.json({
       success: true,
-      url: result.url,
-      key: result.key,
+      url: url,
+      key: file.filename,
     });
   } catch (error) {
     console.error("Upload error:", error);
