@@ -27,7 +27,7 @@ export default function EmployerDetail() {
   const updateEmployer = trpc.employers.update.useMutation({
     onSuccess: () => {
       toast.success("บันทึกข้อมูลเรียบร้อยแล้ว");
-      trpc.useUtils().employers.getById.invalidate({ id: employerId });
+      trpc.useContext().employers.getById.invalidate({ id: employerId });
       setIsEditing(false);
     },
     onError: (error) => {
