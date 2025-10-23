@@ -157,6 +157,7 @@ export const appRouter = router({
         z.object({
           title: z.string().optional(),
           fullName: z.string(),
+          alienId: z.string().optional(),
           nationality: z.string(),
           dateOfBirth: z.string().transform((val) => val ? new Date(val) : undefined).optional(),
           gender: z.enum(["male", "female"]).optional(),
@@ -207,6 +208,7 @@ export const appRouter = router({
           data: z.object({
             title: z.string().optional(),
             fullName: z.string().optional(),
+            alienId: z.string().optional(),
             nationality: z.string().optional(),
             dateOfBirth: z.string().transform((val) => val ? new Date(val) : undefined).optional(),
             gender: z.enum(["male", "female"]).optional(),

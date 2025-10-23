@@ -88,6 +88,7 @@ export const workers = mysqlTable("workers", {
   // ข้อมูลส่วนตัว
   title: varchar("title", { length: 50 }),
   fullName: varchar("fullName", { length: 500 }).notNull(),
+  alienId: varchar("alienId", { length: 50 }), // หมายเลขประจำตัวคนต่างด้าว (optional)
   
   // ข้อมูลพื้นฐาน
   nationality: varchar("nationality", { length: 100 }).notNull(),

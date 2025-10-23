@@ -1,0 +1,1 @@
+ALTER TABLE `workers` ADD `alienId` varchar(50);

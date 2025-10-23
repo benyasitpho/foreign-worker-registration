@@ -43,6 +43,7 @@ export default function WorkerDetail() {
     setFormData({
       title: worker?.title || "",
       fullName: worker?.fullName || "",
+      alienId: worker?.alienId || "",
       nationality: worker?.nationality || "",
       dateOfBirth: worker?.dateOfBirth ? new Date(worker.dateOfBirth).toISOString().split('T')[0] : "",
       gender: worker?.gender || "",
@@ -382,6 +383,16 @@ export default function WorkerDetail() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="alienId">หมายเลขประจำตัวคนต่างด้าว</Label>
+                  <Input
+                    id="alienId"
+                    value={formData.alienId}
+                    onChange={(e) => setFormData({...formData, alienId: e.target.value})}
+                    placeholder="เช่น 0 0104 91276 73 7"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <div className="space-y-2">
@@ -534,6 +545,10 @@ export default function WorkerDetail() {
                 <div>
                   <Label className="text-muted-foreground">ชื่อ-นามสกุล</Label>
                   <p className="font-medium">{worker.fullName}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">หมายเลขประจำตัวคนต่างด้าว</Label>
+                  <p className="font-medium">{worker.alienId || "-"}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">สัญชาติ</Label>

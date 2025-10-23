@@ -24,6 +24,7 @@ export default function WorkerForm() {
     // ข้อมูลส่วนตัว
     title: "",
     fullName: "",
+    alienId: "",
     nationality: "",
     dateOfBirth: "",
     gender: "",
@@ -82,6 +83,7 @@ export default function WorkerForm() {
     setFormData({
       title: "",
       fullName: "",
+      alienId: "",
       nationality: "",
       dateOfBirth: "",
       gender: "",
@@ -167,6 +169,7 @@ export default function WorkerForm() {
       createWorker.mutate({
       title: formData.title || undefined,
       fullName: formData.fullName,
+      alienId: formData.alienId || undefined,
       nationality: formData.nationality,
       passportNo: formData.passportNo,
       dateOfBirth: formData.dateOfBirth || undefined,
@@ -242,6 +245,16 @@ export default function WorkerForm() {
               required
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="alienId">หมายเลขประจำตัวคนต่างด้าว</Label>
+          <Input
+            id="alienId"
+            value={formData.alienId}
+            onChange={(e) => setFormData({...formData, alienId: e.target.value})}
+            placeholder="เช่น 0 0104 91276 73 7 (สามารถเว้นว่างไว้ได้ ถ้ายังไม่มี)"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
