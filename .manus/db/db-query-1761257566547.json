@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, fullName, employmentStatus, resignationDate FROM workers WHERE id = 90002",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute SELECT id, fullName, employmentStatus, resignationDate FROM workers WHERE id = 90002",
+  "rows": [
+    {
+      "id": "90002",
+      "fullName": "LEM SARATT",
+      "employmentStatus": "active",
+      "resignationDate": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfullName\temploymentStatus\tresignationDate\n90002\tLEM SARATT\tactive\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1549
+}

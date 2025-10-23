@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, fullName, employerId, nationality FROM workers WHERE fullName LIKE '%LEM SARATT%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute SELECT id, fullName, employerId, nationality FROM workers WHERE fullName LIKE '%LEM SARATT%'",
+  "rows": [
+    {
+      "id": "90002",
+      "fullName": "LEM SARATT",
+      "employerId": "10001",
+      "nationality": "กัมพูชา"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfullName\temployerId\tnationality\n90002\tLEM SARATT\t10001\tกัมพูชา\n",
+  "stderr": "",
+  "execution_time_ms": 1631
+}

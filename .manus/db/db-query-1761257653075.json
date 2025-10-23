@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO workers (id, title, fullName, alienId, nationality, dateOfBirth, gender, passportNo, employerId, employerName, employmentStatus, createdAt, updatedAt) VALUES (90002, 'Mr.', 'LEM SARATT', '1909894318', 'กัมพูชา', '2006-09-06', 'male', 'IDKHM1909894318', 60001, 'บริษัท ชนม์ณกานต์ จำกัด', 'active', NOW(), NOW())",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute INSERT INTO workers (id, title, fullName, alienId, nationality, dateOfBirth, gender, passportNo, employerId, employerName, employmentStatus, createdAt, updatedAt) VALUES (90002, 'Mr.', 'LEM SARATT', '1909894318', 'กัมพูชา', '2006-09-06', 'male', 'IDKHM1909894318', 60001, 'บริษัท ชนม์ณกานต์ จำกัด', 'active', NOW(), NOW())",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1540
+}

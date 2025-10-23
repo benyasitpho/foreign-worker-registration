@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, fullName, createdAt FROM workers ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute SELECT id, fullName, createdAt FROM workers ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "90002",
+      "fullName": "LEM SARATT",
+      "createdAt": "2025-10-23 21:53:06"
+    },
+    {
+      "id": "60001",
+      "fullName": "NGUON SEYHA",
+      "createdAt": "2025-10-23 21:40:54"
+    },
+    {
+      "id": "30109",
+      "fullName": "SUN PA PA",
+      "createdAt": "2025-10-22 21:44:27"
+    },
+    {
+      "id": "30108",
+      "fullName": "SAW NAING LIN AUNG",
+      "createdAt": "2025-10-22 21:44:26"
+    },
+    {
+      "id": "30107",
+      "fullName": "SAW AUNG KYAW KYAW",
+      "createdAt": "2025-10-22 21:44:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfullName\tcreatedAt\n90002\tLEM SARATT\t2025-10-23 21:53:06\n60001\tNGUON SEYHA\t2025-10-23 21:40:54\n30109\tSUN PA PA\t2025-10-22 21:44:27\n30108\tSAW NAING LIN AUNG\t2025-10-22 21:44:26\n30107\tSAW AUNG KYAW KYAW\t2025-10-22 21:44:26\n",
+  "stderr": "",
+  "execution_time_ms": 1602
+}

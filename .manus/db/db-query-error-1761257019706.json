@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, fullName, employerId, nationality, workStatus FROM workers WHERE fullName LIKE '%LEM SARATT%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3LQdh8aKVTYH37y.54a725a3e670 --database a4g3GpCfW7e4XphivVkmo5 --execute SELECT id, fullName, employerId, nationality, workStatus FROM workers WHERE fullName LIKE '%LEM SARATT%'",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'workstatus' in 'field list'"
+  ]
+}
