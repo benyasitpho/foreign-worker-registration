@@ -44,53 +44,53 @@
 
 :root {
   --radius: 0.625rem;
-  /* Light Theme Colors - Government Green */
-  --background: #f5f9f7; /* Light green-gray background */
-  --foreground: #1a3a2e; /* Dark green text */
+  /* Light Theme Colors - Soft Pastel */
+  --background: #f0f9ff; /* Soft blue background */
+  --foreground: #1e293b; /* Dark slate text */
   --card: #ffffff; /* White cards */
-  --card-foreground: #1a3a2e;
+  --card-foreground: #1e293b;
   --popover: #ffffff;
-  --popover-foreground: #1a3a2e;
-  --primary: #2d5f4d; /* Dark forest green */
+  --popover-foreground: #1e293b;
+  --primary: #10b981; /* Soft emerald green */
   --primary-foreground: #ffffff;
-  --secondary: #e8f3ed; /* Light green */
-  --secondary-foreground: #1a3a2e;
-  --muted: #e8f3ed; /* Light green */
-  --muted-foreground: #5a7a6a;
-  --accent: #d4e8df; /* Pale green accent */
-  --accent-foreground: #1a3a2e;
-  --destructive: #dc2626;
-  --border: #c9ddd3;
+  --secondary: #3b82f6; /* Soft blue */
+  --secondary-foreground: #ffffff;
+  --muted: #f1f5f9; /* Light slate */
+  --muted-foreground: #64748b;
+  --accent: #fb923c; /* Soft orange */
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
   --input: #ffffff;
-  --ring: #2d5f4d;
-  --chart-1: #2d5f4d;
-  --chart-2: #3d7a5f;
-  --chart-3: #4d9570;
-  --chart-4: #5db080;
-  --chart-5: #6dcb90;
+  --ring: #10b981;
+  --chart-1: #10b981;
+  --chart-2: #3b82f6;
+  --chart-3: #fb923c;
+  --chart-4: #8b5cf6;
+  --chart-5: #ec4899;
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a3a2e;
-  --sidebar-primary: #2d5f4d;
+  --sidebar-foreground: #1e293b;
+  --sidebar-primary: #10b981;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8f3ed;
-  --sidebar-accent-foreground: #1a3a2e;
-  --sidebar-border: #c9ddd3;
-  --sidebar-ring: #2d5f4d;
+  --sidebar-accent: #f0fdf4;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #10b981;
 
-  /* Custom Colors - Government Theme */
-  --primary-dark: #1a3a2e; /* Dark green */
-  --primary-navy: #2d5f4d; /* Forest green */
-  --accent-green: #4d9570;
-  --accent-purple: #6d8c7d; /* Muted green-gray */
-  --accent-orange: #2d5f4d; /* Primary green */
-  --accent-yellow: #7fb896;
-  --accent-red: #dc2626;
-  --accent-blue: #3d7a5f;
-  --accent-teal: #4d9570;
+  /* Custom Colors - Soft Pastel Theme */
+  --primary-dark: #059669; /* Emerald 600 */
+  --primary-navy: #3b82f6; /* Blue 500 */
+  --accent-green: #10b981; /* Emerald 500 */
+  --accent-purple: #8b5cf6; /* Violet 500 */
+  --accent-orange: #fb923c; /* Orange 400 */
+  --accent-yellow: #fbbf24; /* Amber 400 */
+  --accent-red: #ef4444; /* Red 500 */
+  --accent-blue: #3b82f6; /* Blue 500 */
+  --accent-teal: #14b8a6; /* Teal 500 */
   --text-white: #ffffff;
-  --text-gray: #5a7a6a;
-  --text-dark: #1a3a2e;
-  --text-light: #f5f9f7;
+  --text-gray: #64748b;
+  --text-dark: #1e293b;
+  --text-light: #f8fafc;
 }
 
 .dark {
