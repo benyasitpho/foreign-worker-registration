@@ -65,7 +65,6 @@ export default function EmployerForm() {
   });
 
   const handleChange = (field: string, value: string) => {
-    console.log('handleChange:', field, '=', value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -103,15 +102,8 @@ export default function EmployerForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('handleSubmit called');
-    console.log('formData state:', formData);
     
     if (!formData.employerType || !formData.companyName || !formData.taxId) {
-      console.log('Validation failed:', { 
-        employerType: formData.employerType, 
-        companyName: formData.companyName, 
-        taxId: formData.taxId 
-      });
       toast.error("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
       return;
     }
@@ -124,7 +116,7 @@ export default function EmployerForm() {
       const uploadPromises = Object.entries(documents).map(async ([key, file]) => {
         if (file) {
           try {
-            console.log('Uploading file:', key, file.name);
+
             const formData = new FormData();
             formData.append('file', file);
             const response = await fetch('/api/upload', {
@@ -132,18 +124,18 @@ export default function EmployerForm() {
               body: formData,
             });
 
-            console.log('Upload response status:', response.status);
+
             if (response.ok) {
               const data = await response.json();
-              console.log('Upload success:', data);
+
               return { type: key, url: data.url };
             } else {
               const errorText = await response.text();
-              console.error('Upload failed:', errorText);
+
               return null;
             }
           } catch (error) {
-            console.error('Upload error:', error);
+
             return null;
           }
         }
@@ -159,7 +151,7 @@ export default function EmployerForm() {
       });
 
       // สร้างข้อมูลนายจ้าง (เอกสารเป็น optional)
-      console.log('Creating employer with docs:', uploadedDocs);
+
       createEmployer.mutate({
         employerType: formData.employerType as "individual" | "company" | "partnership",
         companyName: formData.companyName,

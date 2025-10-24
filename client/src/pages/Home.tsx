@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import EmployerForm from "@/components/forms/EmployerForm";
 import WorkerForm from "@/components/forms/WorkerForm";
-import DataList from "@/components/DataList";
+import DataListImproved from "@/components/DataListImproved";
+import StatisticsDashboard from "@/components/StatisticsDashboard";
 
 export default function Home() {
   // Use APP_LOGO (as image src) and APP_TITLE if needed
@@ -49,7 +50,7 @@ export default function Home() {
 
           {/* Forms and Data Tabs */}
           <Tabs defaultValue="employer-form" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsList className="grid w-full grid-cols-4 h-auto">
               <TabsTrigger value="employer-form" className="py-3">
                 ลงทะเบียนนายจ้าง
               </TabsTrigger>
@@ -58,6 +59,9 @@ export default function Home() {
               </TabsTrigger>
               <TabsTrigger value="data-list" className="py-3">
                 รายการข้อมูล
+              </TabsTrigger>
+              <TabsTrigger value="statistics" className="py-3">
+                สถิติ
               </TabsTrigger>
             </TabsList>
 
@@ -90,7 +94,11 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="data-list" className="mt-6">
-              <DataList />
+              <DataListImproved />
+            </TabsContent>
+
+            <TabsContent value="statistics" className="mt-6">
+              <StatisticsDashboard />
             </TabsContent>
           </Tabs>
         </div>
